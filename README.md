@@ -21,7 +21,7 @@ cargo build --release && sudo ./target/release/k-logger
 ## TO-DO list
 
 * [ ] all keys implementation
-* [ ] multi-keyboard support
+* [x] multi-keyboard support
 * [ ] international keyboard support
 * [ ] internet linked endpoint
 * [ ] hide process

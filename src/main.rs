@@ -10,9 +10,26 @@ mod input;
 mod keys;
 
 fn select_keyboard(keyboards: &[InputDevice]) -> &InputDevice {
-    // if keyboards.len() > 1 {
-    //     todo!("Handle multi keyboard selection")
-    // }
+    if keyboards.len() > 1 {
+        println!("Several keyboards has been detected, please select one: ");
+        let mut idx = 1;
+        for keyboard in keyboards {
+            println!("[{}] - {}", idx, keyboard.name);
+            idx += 1;
+        }
+        let attempt = 0;
+        let mut buffer = String::new();
+        while attempt < 2 {
+            std::io::stdin().read_line(&mut buffer).unwrap();
+            if let Ok(value) = buffer.trim().parse::<usize>() {
+                let value = value - 1;
+                if value < keyboards.len() {
+                    return &keyboards[value];
+                }
+            }
+        }
+        println!("Failed to select a valid keyboard, taking the first one instead");
+    }
     &keyboards[0]
 }
 
