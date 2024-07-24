@@ -10,9 +10,9 @@ mod input;
 mod keys;
 
 fn select_keyboard(keyboards: &[InputDevice]) -> &InputDevice {
-    if keyboards.len() > 1 {
-        todo!("Handle multi keyboard selection")
-    }
+    // if keyboards.len() > 1 {
+    //     todo!("Handle multi keyboard selection")
+    // }
     &keyboards[0]
 }
 

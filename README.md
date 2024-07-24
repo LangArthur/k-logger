@@ -1,6 +1,6 @@
 # K-logger
 
-A little key-logger written in rust for linux. It listens directly to a keyboard input (in /dev/input). At the moment, it does not support multiple keyboards.
+A little key-logger written in rust for linux. It listens directly to a keyboard input (in /dev/input). At the moment, it does not support multiple keyboards and will take the first one detected.
 This project is still work in progress.
 
 ## Build and run
@@ -12,10 +12,6 @@ cargo build --release && sudo ./target/release/k-logger
 ```
 
 :warning: The binary need to be launch with sudo privileges.
-
-## Disclaimer
-
-This project is build for fun and educational purpose. DO NOT USE IT for any illegal actions.
 
 ## Built With
 
@@ -32,3 +28,7 @@ This project is build for fun and educational purpose. DO NOT USE IT for any ill
 * [ ] remove sudo privilege ?
 * [ ] Windows support
 * [ ] time limitation where the logger stops and delete himself
+
+## Disclaimer
+
+This project is build for fun and educational purpose. DO NOT USE IT for any illegal actions.
