@@ -47,7 +47,7 @@ fn main() -> std::io::Result<()> {
     info!("Listen inputs from {}", to_listen.name);
     println!("{:?}", to_listen.events_fs);
     let mut buffer = [0u8; 24];
-    let mut console = consumer::Console::<keyboards::Qwerty>::new();
+    let mut console = consumer::Console::<keyboards::Azerty>::new();
 
     let mut fd = std::fs::File::open(to_listen.events_fs.clone())?;
     while is_running() {
