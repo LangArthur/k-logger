@@ -7,7 +7,8 @@ use tracing::info;
 mod consumer;
 mod device;
 mod input;
-mod keys;
+mod key;
+mod keyboards;
 
 fn select_keyboard(keyboards: &[InputDevice]) -> &InputDevice {
     if keyboards.len() > 1 {
@@ -17,7 +18,7 @@ fn select_keyboard(keyboards: &[InputDevice]) -> &InputDevice {
             println!("[{}] - {}", idx, keyboard.name);
             idx += 1;
         }
-        let attempt = 0;
+        let mut attempt = 0;
         let mut buffer = String::new();
         while attempt < 2 {
             std::io::stdin().read_line(&mut buffer).unwrap();
@@ -27,6 +28,7 @@ fn select_keyboard(keyboards: &[InputDevice]) -> &InputDevice {
                     return &keyboards[value];
                 }
             }
+            attempt += 1;
         }
         println!("Failed to select a valid keyboard, taking the first one instead");
     }
@@ -45,7 +47,7 @@ fn main() -> std::io::Result<()> {
     info!("Listen inputs from {}", to_listen.name);
     println!("{:?}", to_listen.events_fs);
     let mut buffer = [0u8; 24];
-    let mut console = consumer::Console::new();
+    let mut console = consumer::Console::<keyboards::Qwerty>::new();
 
     let mut fd = std::fs::File::open(to_listen.events_fs.clone())?;
     while is_running() {
