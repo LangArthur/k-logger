@@ -1,0 +1,17 @@
+{
+    "version": "0.2",
+    "ignorePaths": [],
+    "dictionaryDefinitions": [],
+    "dictionaries": [],
+    "words": [
+        "Azerty",
+        "inser",
+        "KPCOMMA",
+        "LEFTALT",
+        "LEFTBRACE",
+        "RIGHTBRACE",
+        "RIGHTSHIFT"
+    ],
+    "ignoreWords": [],
+    "import": []
+}
