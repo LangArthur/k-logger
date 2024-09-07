@@ -35,6 +35,7 @@ where
     T: Layout,
 {
     shift_pressed: u8,
+    left_alt_pressed: bool,
     phantom: std::marker::PhantomData<T>,
     // session: Session<F>,
 }
@@ -46,6 +47,7 @@ where
     pub fn new() -> Self {
         Self {
             shift_pressed: 0,
+            left_alt_pressed: false,
             phantom: PhantomData,
             // session: Session::new(|| println!("\n")),
         }
@@ -62,13 +64,17 @@ where
             let key: Code = event.code.try_into().unwrap();
             if event.is_pressed() {
                 if key == Code::KEY_LEFTSHIFT || key == Code::KEY_RIGHTSHIFT {
-                    self.shift_pressed += 1
+                    self.shift_pressed += 1;
+                } else if key == Code::KEY_LEFTALT {
+                    self.left_alt_pressed = true;
                 }
                 println!("{}", <T>::format(&key, self.shift_pressed > 0));
-            } else if event.is_released()
-                && (key == Code::KEY_LEFTSHIFT || key == Code::KEY_RIGHTSHIFT)
-            {
-                self.shift_pressed -= 1
+            } else if event.is_released() {
+                if key == Code::KEY_LEFTSHIFT || key == Code::KEY_RIGHTSHIFT {
+                    self.shift_pressed -= 1
+                } else if key == Code::KEY_LEFTALT {
+                    self.left_alt_pressed = false;
+                }
             }
         }
     }
