@@ -1,9 +1,13 @@
-use std::{fs::File, io::Read};
+use std::{path::Path, str::FromStr};
 
 use tracing::warn;
 
+use crate::{keyboards::Variant, utils::get_file_content};
+
 const DEVICES_PATH: &str = "/proc/bus/input/devices";
 const INPUT_FILE: &str = "/dev/input/";
+
+const KEYBOARD_MAPPING_FILES: [&str; 2] = ["/etc/default/keyboard", "/etc/rc.d/rc.keymap"];
 
 pub struct InputDevice {
     pub name: String,
@@ -56,11 +60,7 @@ impl InputDevice {
 }
 
 pub fn load_devices() -> std::io::Result<Vec<InputDevice>> {
-    let mut device_file_content = vec![];
-    let mut fd = File::open(DEVICES_PATH)?;
-    fd.read_to_end(&mut device_file_content)?;
-
-    Ok(String::from_utf8(device_file_content)
+    Ok(get_file_content(DEVICES_PATH)
         .unwrap_or_else(|_| panic!("{DEVICES_PATH} should be utf8 convertible"))
         .split("\n\n")
         .filter_map(|info| InputDevice::from_bus_info(info).ok())
@@ -71,4 +71,33 @@ pub fn detect_keyboard() -> Vec<InputDevice> {
     let mut res = load_devices().unwrap_or_default();
     res.retain(|d| d.is_keyboard());
     res
+}
+
+pub fn keyboard_layout() -> Variant {
+    let path = match KEYBOARD_MAPPING_FILES
+        .iter()
+        .find(|path| Path::new(path).is_file())
+    {
+        Some(path) => Path::new(path),
+        None => {
+            warn!("Failed to deduce keyboard layout, using qwerty by default. Reason: cannot find layout file");
+            return Variant::Qwerty;
+        }
+    };
+    match get_file_content(path) {
+        Ok(content) => {
+            let lines: Vec<&str> = content.split_terminator('\n').collect();
+            Variant::from_str(lines[1].strip_prefix("XKBVARIANT=").unwrap_or(lines[1]))
+                .unwrap_or_else(|err| {
+                    warn!(
+                        "Failed to deduce keyboard layout, using qwerty by default. Reason: ${err}"
+                    );
+                    Variant::Qwerty
+                })
+        }
+        Err(err) => {
+            warn!("Failed to deduce keyboard layout, using qwerty by default. Reason: ${err}");
+            Variant::Qwerty
+        }
+    }
 }

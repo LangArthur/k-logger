@@ -1,7 +1,7 @@
 use std::io::Read;
 
 use consumer::Consumer;
-use device::InputDevice;
+use device::{keyboard_layout, InputDevice};
 use tracing::info;
 
 mod consumer;
@@ -9,6 +9,7 @@ mod device;
 mod input;
 mod key;
 mod keyboards;
+mod utils;
 
 fn select_keyboard(keyboards: &[InputDevice]) -> &InputDevice {
     if keyboards.len() > 1 {
@@ -47,7 +48,14 @@ fn main() -> std::io::Result<()> {
     info!("Listen inputs from {}", to_listen.name);
     println!("{:?}", to_listen.events_fs);
     let mut buffer = [0u8; 24];
+    let variant = keyboard_layout();
+    info!("Detected a {variant} keyboard (not fully implemented yet");
+
     let mut console = consumer::Console::<keyboards::Azerty>::new();
+    // let mut console: Box<consumer::Console<dyn KeyMap>> = match variant {
+    //     Variant::Azerty => Box::new(consumer::Console::<keyboards::Azerty>::new()),
+    //     Variant::Qwerty => Box::new(consumer::Console::<keyboards::Qwerty>::new()),
+    // };
 
     let mut fd = std::fs::File::open(to_listen.events_fs.clone())?;
     while is_running() {

@@ -1,6 +1,6 @@
 use crate::key::Code;
 
-use super::layout::Layout;
+use super::layout::KeyMap;
 
 pub struct Azerty;
 
@@ -69,7 +69,7 @@ impl Azerty {
     }
 }
 
-impl Layout for Azerty {
+impl KeyMap for Azerty {
     fn format(key: &Code, is_shifted: bool) -> String {
         let key_as_str = match key {
             Code::KEY_RESERVED => "<reserved>",

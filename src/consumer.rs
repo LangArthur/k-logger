@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use crate::{input, key::Code, keyboards::Layout};
+use crate::{input, key::Code, keyboards::KeyMap};
 
 pub trait Consumer {
     fn consume(&mut self, event: input::Event);
@@ -32,7 +32,7 @@ pub trait Consumer {
 
 pub struct Console<T>
 where
-    T: Layout,
+    T: KeyMap,
 {
     shift_pressed: u8,
     left_alt_pressed: bool,
@@ -42,7 +42,7 @@ where
 
 impl<T> Console<T>
 where
-    T: Layout,
+    T: KeyMap,
 {
     pub fn new() -> Self {
         Self {
@@ -56,7 +56,7 @@ where
 
 impl<T> Consumer for Console<T>
 where
-    T: Layout,
+    T: KeyMap,
 {
     fn consume(&mut self, event: input::Event) {
         // self.session.update();
