@@ -2,7 +2,11 @@
 
 A little key-logger written in rust for linux. It listens directly to a keyboard input (in /dev/input).
 
-This project is still work in progress.
+Most of the common keys are supported.
+
+Qwerty and Azerty keyboards are implemented but more keyboard layout can be added to the list.
+
+:warning: This project is still work in progress.
 
 ## Build and run
 
@@ -21,7 +25,7 @@ cargo build --release && sudo ./target/release/k-logger
 
 ## TO-DO list
 
-* [ ] all keys implementation
+* [x] Common keys implementation
 * [x] multi-keyboard support
 * [x] international keyboard support (Azerty + Qwerty)
 * [ ] write inputs to a file
