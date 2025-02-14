@@ -4,10 +4,18 @@ use tracing::warn;
 
 use crate::{keyboards::Variant, utils::get_file_content};
 
-const DEVICES_PATH: &str = "/proc/bus/input/devices";
-const INPUT_FILE: &str = "/dev/input/";
+struct SystemPath<'a> {
+    device: &'a str,
+    input: &'a str,
+    keyboard_mapping: [&'a str; 2],
+}
 
-const KEYBOARD_MAPPING_FILES: [&str; 2] = ["/etc/default/keyboard", "/etc/rc.d/rc.keymap"];
+#[cfg(unix)]
+const PATH: SystemPath = SystemPath {
+    device: "/proc/bus/input/devices",
+    input: "/dev/input/",
+    keyboard_mapping: ["/etc/default/keyboard", "/etc/rc.d/rc.keymap"],
+};
 
 pub struct InputDevice {
     pub name: String,
@@ -35,7 +43,7 @@ impl InputDevice {
                             });
                     }
                     'H' => {
-                        events_fs = INPUT_FILE.to_owned()
+                        events_fs = PATH.input.to_owned()
                             + line
                                 .strip_prefix("H: Handlers=")
                                 .expect("Handlers should be present in bus information")
@@ -60,8 +68,8 @@ impl InputDevice {
 }
 
 pub fn load_devices() -> std::io::Result<Vec<InputDevice>> {
-    Ok(get_file_content(DEVICES_PATH)
-        .unwrap_or_else(|_| panic!("{DEVICES_PATH} should be utf8 convertible"))
+    Ok(get_file_content(PATH.device)
+        .unwrap_or_else(|_| panic!("{} should be utf8 convertible", PATH.device))
         .split("\n\n")
         .filter_map(|info| InputDevice::from_bus_info(info).ok())
         .collect())
@@ -74,7 +82,8 @@ pub fn detect_keyboard() -> Vec<InputDevice> {
 }
 
 pub fn keyboard_layout() -> Variant {
-    let path = match KEYBOARD_MAPPING_FILES
+    let path = match PATH
+        .keyboard_mapping
         .iter()
         .find(|path| Path::new(path).is_file())
     {
