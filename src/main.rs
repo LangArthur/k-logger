@@ -1,8 +1,9 @@
 use std::io::Read;
 
+use clap::Parser;
 use consumer::Consumer;
 use device::{keyboard_layout, InputDevice};
-use keyboards::{Azerty, Qwerty, Variant};
+use keyboards::{Azerty, KeyMap, Qwerty, Variant};
 use tracing::info;
 
 mod consumer;
@@ -11,6 +12,13 @@ mod input;
 mod key;
 mod keyboards;
 mod utils;
+
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    #[arg(short, long)]
+    file: Option<String>,
+}
 
 fn select_keyboard(keyboards: &[InputDevice]) -> &InputDevice {
     if keyboards.len() > 1 {
@@ -44,6 +52,8 @@ fn is_running() -> bool {
 fn main() -> std::io::Result<()> {
     tracing_subscriber::fmt::init();
 
+    let args = Args::parse();
+
     let keyboards = device::detect_keyboard();
     let to_listen = select_keyboard(&keyboards);
     info!("Listen inputs from {}", to_listen.name);
@@ -52,9 +62,14 @@ fn main() -> std::io::Result<()> {
     let variant = keyboard_layout();
     info!("Detected a {variant} keyboard (not fully implemented yet");
 
-    let mut console: consumer::Console = match variant {
-        Variant::Azerty => consumer::Console::new(Box::new(Azerty)),
-        Variant::Qwerty => consumer::Console::new(Box::new(Qwerty)),
+    let key_layout: Box<dyn KeyMap> = match variant {
+        Variant::Azerty => Box::new(Azerty),
+        Variant::Qwerty => Box::new(Qwerty),
+    };
+
+    let mut consumer: Box<dyn Consumer> = match args.file {
+        Some(file_path) => Box::new(consumer::File::new(key_layout, file_path).unwrap()),
+        None => Box::new(consumer::Console::new(key_layout)),
     };
 
     let mut fd = std::fs::File::open(to_listen.events_fs.clone())?;
@@ -63,7 +78,7 @@ fn main() -> std::io::Result<()> {
         if n > 0 {
             let event = input::Event::from_buffer(&buffer);
             if event.is_key() {
-                console.consume(event);
+                consumer.consume(event);
             }
         }
     }
