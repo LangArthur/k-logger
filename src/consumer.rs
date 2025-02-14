@@ -1,5 +1,3 @@
-use std::marker::PhantomData;
-
 use crate::{input, key::Code, keyboards::KeyMap};
 
 pub trait Consumer {
@@ -30,33 +28,27 @@ pub trait Consumer {
 //     fn run(&mut self) {}
 // }
 
-pub struct Console<T>
-where
-    T: KeyMap,
+pub struct Console
 {
     shift_pressed: u8,
     left_alt_pressed: bool,
-    phantom: std::marker::PhantomData<T>,
+    formatter: Box<dyn KeyMap>,
     // session: Session<F>,
 }
 
-impl<T> Console<T>
-where
-    T: KeyMap,
+impl Console
 {
-    pub fn new() -> Self {
+    pub fn new(formatter: Box<dyn KeyMap>) -> Self {
         Self {
             shift_pressed: 0,
             left_alt_pressed: false,
-            phantom: PhantomData,
+            formatter
             // session: Session::new(|| println!("\n")),
         }
     }
 }
 
-impl<T> Consumer for Console<T>
-where
-    T: KeyMap,
+impl Consumer for Console
 {
     fn consume(&mut self, event: input::Event) {
         // self.session.update();
@@ -68,7 +60,7 @@ where
                 } else if key == Code::KEY_LEFTALT {
                     self.left_alt_pressed = true;
                 }
-                println!("{}", <T>::format(&key, self.shift_pressed > 0));
+                println!("{}", self.formatter.format(&key, self.shift_pressed > 0));
             } else if event.is_released() {
                 if key == Code::KEY_LEFTSHIFT || key == Code::KEY_RIGHTSHIFT {
                     self.shift_pressed -= 1

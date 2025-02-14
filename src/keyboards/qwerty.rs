@@ -48,7 +48,7 @@ impl Qwerty {
 }
 
 impl KeyMap for Qwerty {
-    fn format(key: &Code, is_shifted: bool) -> String {
+    fn format(&self, key: &Code, is_shifted: bool) -> String {
         let key_as_str = match key {
             Code::KEY_RESERVED => "<reserved>",
             Code::KEY_ESC => "<escape>",

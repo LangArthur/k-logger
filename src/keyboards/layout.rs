@@ -42,5 +42,5 @@ impl Display for Variant {
 }
 
 pub trait KeyMap {
-    fn format(key: &key::Code, is_shifted: bool) -> String;
+    fn format(&self, key: &key::Code, is_shifted: bool) -> String;
 }
