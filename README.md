@@ -6,6 +6,17 @@ Most of the common keys are supported.
 
 Qwerty and Azerty keyboards are implemented but more keyboard layout can be added to the list.
 
+## Usage
+
+```txt
+Usage: k-logger [OPTIONS]
+
+Options:
+  -f, --file <FILE>  
+  -h, --help         Print help
+  -V, --version      Print version
+```
+
 :warning: This project is still work in progress.
 
 ## Build and run
@@ -20,6 +31,7 @@ cargo build --release && sudo ./target/release/k-logger
 
 ## Built With
 
+* [clap](https://docs.rs/clap/latest/clap/index.html) - Command Line Argument Parser for Rust.
 * [tracing](https://docs.rs/tracing/latest/tracing/) - tracing is a framework for instrumenting Rust programs to collect structured, event-based diagnostic information.
 * [tracing-subscriber](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/) - Utilities for implementing and composing tracing subscribers.
 
@@ -28,7 +40,7 @@ cargo build --release && sudo ./target/release/k-logger
 * [x] Common keys implementation
 * [x] multi-keyboard support
 * [x] international keyboard support (Azerty + Qwerty)
-* [ ] write inputs to a file
+* [x] write inputs to a file
 * [ ] internet linked endpoint
 * [ ] hide process
 * [ ] remove sudo privilege ?
